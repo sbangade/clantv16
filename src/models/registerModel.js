@@ -7,52 +7,52 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 export const RegistersSchema = new Schema({
-    FirstName: {
+    first_name: {
         type: String,
         required: 'Enter first name'
     },
-    LastName: {
+    last_name: {
         type: String,
         required: 'Enter first name'
     },
-    DOB: {
+    dob: {
         type: Date,
         required: 'Enter Date of Birth'
     },
-    Is_driver_or_passenger: {
+    is_driver_or_passenger: {
         type: Boolean,
         required:'Enter driver or passenger'
     },
-    Image: {
+    image: {
         type: String
     },
-    Mobile: {
+    mobile: {
         type: Number,
         required: 'Enter your mobile number'
 
     },
-    Email: {
+    email: {
         type: String,
         required: 'Enter your Email address'
 
     },
-    Gender: {
+    gender: {
         type: String
     },
-    Car_details: {
+    car_details: {
         type: String
     },
-    Password: {
+    password: {
         type: String,
         required: 'Enter your password'
     },
-    Token: {
+    token: {
         type: String
     },
-    fcmToken: {
+    fcm_token: {
         type: String
     },
-    Everification: {
+    everification: {
         type: String
     },
     plist: [{
@@ -71,14 +71,14 @@ export const RegistersSchema = new Schema({
 });
 
 export const PilotSchema = new Schema({
-    FindPassenger: {
+    find_passenger: {
         type: Boolean,
     },
-    Locality: {
+    locality: {
         type: String,
         required: 'Enter your location'
     },
-    RideType: {
+    ride_type: {
         type: String,
         required: 'Enter ride type'
     },
@@ -86,10 +86,10 @@ export const PilotSchema = new Schema({
         type: Boolean,
         default: false
     },
-    Token: {
+    token: {
         type: String
     },
-    tripCancel:{
+    trip_cancel:{
         type:Boolean,
         default: false
     },
@@ -101,23 +101,23 @@ export const PilotSchema = new Schema({
 });
 
 export const passengerSchema = new Schema({
-    PickUp: {
+    pick_up: {
         type: String,
         required: 'Enter your pickup location'
     },
-    DropOff: {
+    drop_off: {
         type: String,
         required: 'Enter your drop off location'
     },
-    Time: {
+    time: {
         type: Date,
         required: 'Enter your ride time'
     },
-    Description: {
+    description: {
         type: String,
        required: 'Enter your description'
     },
-    RideType: {
+    ride_type: {
         type: String,
         required: 'Enter your ride type'
     },
@@ -129,11 +129,11 @@ export const passengerSchema = new Schema({
         type: Boolean,
         default: false
     },
-    tripCancel:{
+    trip_cancel:{
         type:Boolean,
         default: false
     },
-    Token: {
+    token: {
         type: String
     },
     drivers: {

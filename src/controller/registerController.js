@@ -696,8 +696,8 @@ export const addDriver = async (req, res, next) => {
 export const confirmBooking = async (req, res, next) => {
   const postid = await Passenger.findOne({ _id: req.query.poster })
   console.log(postid.poster);
-  const tokenn = await Register.findOne({ Token: req.query.token },{"_id":1,"FirstName":1,"LastName":1, "Image":1})
-  const drvr = await Register.findOne({ _id: postid.poster },{"FirstName":1,"LastName":1,"Image":1});
+  const tokenn = await Register.findOne({ token: req.query.token },{"_id":1,"first_name":1,"last_name":1, "image":1})
+  const drvr = await Register.findOne({ _id: postid.poster },{"first_name":1,"last_name":1,"image":1});
   console.log('new',drvr);
   
   //var upost = JSON.stringify(postid)
@@ -713,7 +713,7 @@ export const confirmBooking = async (req, res, next) => {
   //////new
   const user = await Register.findById(tokenn._id);
   const driveR = await Register.findById(postid.poster);
-  console.log('drive',driveR.fcmToken);
+  console.log('drive',driveR.fcm_token);
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
   // await newPlace.save();
@@ -790,8 +790,8 @@ admin.messaging().send(message)
 export const bookingCancellation = async (req, res, next) => {
   const postid = await Passenger.findOne({ _id: req.query.poster })
   console.log('poster',postid.poster);
-  const tokenn = await Register.findOne({ token: req.query.token },{"FirstName":1,"LastName":1});
-  const drvr = await Register.findOne({ _id: postid.poster },{"FirstName":1,"LastName":1,"Image":1});
+  const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1});
+  const drvr = await Register.findOne({ _id: postid.poster },{"first_name":1,"last_name":1,"image":1});
   console.log('new',drvr);
   //console.log(tokenn);
                //const {placeID} = req.params;
@@ -872,8 +872,8 @@ admin.messaging().send(message)
 export const passengerCancellation = async (req, res, next) => {
   const postid = await Pilot.findOne({ _id: req.query.poster })
   //console.log('poster',postid.myfavorite);
-  const tokenn = await Register.findOne({ Token: req.query.token },{"FirstName":1,"LastName":1})
-  const drvr = await Register.findOne({ _id: postid.myfavorite },{"FirstName":1,"LastName":1,"Image":1});
+  const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1})
+  const drvr = await Register.findOne({ _id: postid.myfavorite },{"first_name":1,"last_name":1,"image":1});
   console.log('new',drvr);
   //console.log(tokenn);
                //const {placeID} = req.params;
@@ -974,7 +974,7 @@ export const datahistory = async (req, res, next) => {
 user_history.forEach(async (element, index, array) => {
 
       let temp = element.poster;
-      var value = await Register.findOne(temp).select('FirstName LastName Image Mobile')
+      var value = await Register.findOne(temp).select('first_name last_name image mobile')
 
       var jsonObject = JSON.parse("{}")
 
@@ -1097,7 +1097,7 @@ passenger_list.forEach(async (element, index, array) => {
       //console.log('driver_id - ',temp);
       if(temp != undefined) {
       
-      var value = await Register.findOne(temp).select('FirstName LastName Image Mobile');
+      var value = await Register.findOne(temp).select('first_name last_name image mobile');
       console.log('value', value.first_name);
       // var jsonObject = JSON.parse("{}")
 

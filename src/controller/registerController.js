@@ -145,6 +145,29 @@ export const addnewRegister = (req, res, next) => {
        // return res.status(200).json({
          // message: "Registered successfully!"
         //});
+        var matches = req.body.image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/),
+        response = {};
+         
+        if (matches.length !== 3) {
+        return new Error('Invalid input string');
+        }
+         
+        response.type = matches[1];
+        response.data = new Buffer(matches[2], 'base64');
+        let decodedImg = response;
+        let imageBuffer = decodedImg.data;
+        let type = decodedImg.type;
+        let extension = mime.extension(type);
+        let fileName = "image." + extension;
+        try {
+        fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
+        return res.status(200).json({
+          message: "Registered successfully!"
+        });
+        } 
+        catch (e) {
+        next(e);
+        }
       }else{
         return res.status(401).json({
           message: "Email already exist."
@@ -152,29 +175,7 @@ export const addnewRegister = (req, res, next) => {
       }
     });
   } 
-  var matches = req.body.image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/),
-  response = {};
-   
-  if (matches.length !== 3) {
-  return new Error('Invalid input string');
-  }
-   
-  response.type = matches[1];
-  response.data = new Buffer(matches[2], 'base64');
-  let decodedImg = response;
-  let imageBuffer = decodedImg.data;
-  let type = decodedImg.type;
-  let extension = mime.extension(type);
-  let fileName = "image." + extension;
-  try {
-  fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
-  return res.status(200).json({
-    message: "Registered successfully!"
-  });
-  } 
-  catch (e) {
-  next(e);
-  }
+
   
 }
   
@@ -265,7 +266,7 @@ export const userLogin = (req, res, next) => {
              Register.findOneAndUpdate({email: req.body.email }, { $set:
               {
                 token: token,
-                fcm_Token: f_token 
+                fcm_token: f_token 
               }
            },
           null, function (err, docs, next) {
@@ -572,15 +573,15 @@ export const getEmail = (req, res) => {
 
 export const addDriver = async (req, res, next) => {
   const tchecker = req.body.token;
-  const locality = req.body.locality
-  const ridetype = req.body.ride_type
+  const local = req.body.locality;
+  const ridetype = req.body.ride_type;
  
   if(tchecker == '' || tchecker == undefined){
     return res.status(401).json({
       message: "Please enter your token"
     });
   }
-  if( locality == '' || locality == undefined){
+  if( local == '' || local == undefined){
     return res.status(401).json({
       message: "Please Enter Locality"
     });
@@ -601,19 +602,19 @@ export const addDriver = async (req, res, next) => {
   newPlace.myfavorite = user; //myfavorite
   await newPlace.save();
   user.favlist.push(newPlace);
-  const locality = req.body.locality
+  //const locality = req.body.locality
   //var dateTimeTofilter = moment().subtract(1, 'year');
   var currentdate = new Date(); 
   console.log(currentdate);
-  
+  // {drop_off: { $regex: new RegExp(`^${local}$`), $options: 'i' }}
   await user.save();
   var jsonToSend = [];
   await Passenger.find(
         {
           $and: [{$or:[
            // { $text: { $search: "sarnia" } }
-          {pick_up: new RegExp('^' +locality + '$', 'i')},
-          {drop_off: new RegExp('^' +locality + '$', 'i')}
+          {pick_up: /sarnia/i},
+          {drop_off: /sarnia/i}
         
         ]},
         {
@@ -631,7 +632,7 @@ export const addDriver = async (req, res, next) => {
              login.forEach(async (element, index, array) => {
 
               let temp = element.poster;
-              var value = await Register.findOne(temp).select('FirstName LastName Image Mobile')
+              var value = await Register.findOne(temp).select('first_name last_name image mobile')
         
               var jsonObject = JSON.parse("{}")
         

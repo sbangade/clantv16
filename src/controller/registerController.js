@@ -312,10 +312,10 @@ user_history.forEach(async (element, index, array) => {
       jsonObject.drop_off = element.drop_off
       jsonObject.time = element.time
       jsonObject.description = element.description
-      jsonObject.FirstNamePassenger = value.first_name
-      jsonObject.LastNamePassenger = value.last_name
-      jsonObject.ImagePassenger = value.image
-      jsonObject.MobilePassenger = value.mobile
+      jsonObject.first_name_passenger = value.first_name
+      jsonObject.last_name_Passenger = value.last_name
+      jsonObject.image_passenger = value.image
+      jsonObject.mobile_passenger = value.mobile
       //jsonObject.Token = Token
       //jsonObject.is_driver = is_driver
 
@@ -437,7 +437,7 @@ export const passengerHistory = async (req, res) => {
         let temp = element.drivers;
         //console.log('element - ',element)
         
-        var value = await Register.findOne(temp).select('FirstName LastName Image Mobile')
+        var value = await Register.findOne(temp).select('first_name last_name image mobile')
         //console.log('driver - ', value);
   
         //var jsonObject = JSON.parse(JSON.stringify(passenger_list))
@@ -467,10 +467,10 @@ export const passengerHistory = async (req, res) => {
         jsonObject.drop_off = element.drop_off
         jsonObject.time = element.time
         jsonObject.description = element.description
-        jsonObject.FirstNamePassenger = value.first_name
-        jsonObject.LastNamePassenger = value.last_name
-        jsonObject.ImagePassenger = value.image
-        jsonObject.MobilePassenger = value.mobile
+        jsonObject.first_name_passenger = value.first_name
+        jsonObject.last_name_passenger = value.last_name
+        jsonObject.image_passenger = value.image
+        jsonObject.mobile_passenger = value.mobile
         //jsonObject.Token = Token
         //jsonObject.is_driver = is_driver
       
@@ -643,10 +643,10 @@ export const addDriver = async (req, res, next) => {
               jsonObject.drop_off = element.drop_off
               jsonObject.time = element.time
               jsonObject.description = element.description
-              jsonObject.FirstNamePassenger = value.first_name
-              jsonObject.LastNamePassenger = value.last_name
-              jsonObject.ImagePassenger = value.image
-              jsonObject.MobilePassenger = value.mobile
+              jsonObject.first_name_passenger = value.first_name
+              jsonObject.last_name_passenger = value.last_name
+              jsonObject.image_passenger = value.image
+              jsonObject.mobile_passenger = value.mobile
         
               jsonToSend.push(jsonObject)
         
@@ -985,10 +985,10 @@ user_history.forEach(async (element, index, array) => {
       jsonObject.drop_off = element.drop_off
       jsonObject.time = element.time
       jsonObject.description = element.description
-      jsonObject.FirstNamePassenger = value.first_name
-      jsonObject.LastNamePassenger = value.last_name
-      jsonObject.ImagePassenger = value.image
-      jsonObject.MobilePassenger = value.mobile
+      jsonObject.first_name_passenger = value.first_name
+      jsonObject.last_name_passenger = value.last_name
+      jsonObject.image_passenger = value.image
+      jsonObject.mobile_passenger = value.mobile
 
       jsonToSend.push(jsonObject)
 
@@ -1107,10 +1107,10 @@ passenger_list.forEach(async (element, index, array) => {
       // jsonObject.MobilePassenger = value.Mobile
 
       // jsonToSend.push(jsonObject)
-        jsonarray[index].FirstNameDriver = value.first_name
-        jsonarray[index].LastNameDriver = value.last_name
-        jsonarray[index].ImageDriver = value.image
-        jsonarray[index].MobileDriver = value.mobile
+        jsonarray[index].first_name_driver = value.first_name
+        jsonarray[index].last_name_driver = value.last_name
+        jsonarray[index].image_driver = value.image
+        jsonarray[index].mobile_driver = value.mobile
         
         // function funName(jsonToSend) {
         //return res.status(200).send(jsonarray);

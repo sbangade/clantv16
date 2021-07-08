@@ -61,30 +61,7 @@ export const uploadImage = async (req, res, next) => {
 
 export const addnewRegister = (req, res, next) => {
   
-//   let newRegister = new Register(req.body);
-//  // if(req.file){
-//    //        newRegister.Image = req.file.path
-//      //    }
-//   newRegister.save((err, login) => {
-//         if (err) {
-//             res.send(err);
-//         }
-//         res.json(login);
-//     });
-  // if(req.body.Email.length > 1 && req.body.FirstName.length > 1 && req.body.LastName.length > 1 && req.body.DOB.length > 1 && req.body.Mobile.length > 1 && req.body.Password.length > 1){
-  // Register.find({ Email: req.body.Email })
-  // .exec()
-  // .then(user => {
-  //   if (user.length < 1) {
-  //     newRegister.save();
-  //     res.send('Login successfully!')
-  //   }else{
-  //       res.send('email already exist')
-  //   }
-  // });}
-  // else{
-  //   res.send("Please enter the medatory fields")
-  // }
+
 
     let newRegister = new Register(req.body);
     const mail = req.body.email;
@@ -142,6 +119,9 @@ export const addnewRegister = (req, res, next) => {
           //   newRegister.Image = req.file.path
           // }
         newRegister.save();
+        return res.status(200).json({
+          message: "Registered successfully!"
+        });
        // return res.status(200).json({
          // message: "Registered successfully!"
         //});
@@ -161,9 +141,9 @@ export const addnewRegister = (req, res, next) => {
         let fileName = "image." + extension;
         try {
         fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
-        return res.status(200).json({
-          message: "Registered successfully!"
-        });
+        // return res.status(200).json({
+        //   message: "Registered successfully!"
+        // });
         } 
         catch (e) {
         next(e);
@@ -395,7 +375,7 @@ export const driverHistory = async (req, res) => {
    });
 }
 export const liveDriver = async (req, res) => { 
-  await Pilot.find({ "FindPassenger": { $eq: true } },(err, login) => {
+  await Pilot.find({ "find_passenger": { $eq: true } },(err, login) => {
          if (err) {
              res.send(err);
          }

@@ -277,43 +277,90 @@ export const userLogin = (req, res, next) => {
         }
     )
      }else{
-
-user_history.forEach(async (element, index, array) => {
-
-      let temp = element.poster;
-      var value = await Register.findOne(temp).select('FirstName LastName Image Mobile')
-
-      var jsonObject = JSON.parse("{}")
+      fun_for_loop(user_history)
 
 
-      jsonObject.is_trip_completed = element.is_trip_completed
-      jsonObject.post_id = element._id
-      jsonObject.pick_up = element.pick_up
-      jsonObject.drop_off = element.drop_off
-      jsonObject.time = element.time
-      jsonObject.description = element.description
-      jsonObject.first_name_passenger = value.first_name
-      jsonObject.last_name_Passenger = value.last_name
-      jsonObject.image_passenger = value.image
-      jsonObject.mobile_passenger = value.mobile
-      //jsonObject.Token = Token
-      //jsonObject.is_driver = is_driver
-
-      jsonToSend.push(jsonObject)
-
-         if (index == array.length - 1) {
+      async function fun_for_loop(user_history) {
+    
+          var index = 0
+          for (var element of user_history){
+            index++
+    
+            let temp = element.poster;
+            
+            var value = await Register
+            .findOne(temp)
+            .select('first_name last_name image mobile')
+            
+            var jsonObject = JSON.parse("{}")
+            jsonObject.is_trip_completed = element.is_trip_completed
+            jsonObject.post_id = element._id
+            jsonObject.pick_up = element.pick_up
+            jsonObject.drop_off = element.drop_off
+            jsonObject.time = element.time
+            jsonObject.description = element.description
+            
+            jsonObject.first_name_passenger = value.first_name
+            jsonObject.last_name_passenger = value.last_name
+            jsonObject.image_passenger = value.image
+            jsonObject.mobile_passenger = value.mobile
+    
           
-             funName(jsonToSend, token, is_driver);
-         }
-});
-function funName(list, token, is_driver) {
+    
+          jsonToSend.push(jsonObject) 
+    
+               if (index == user_history.length) { 
+                funName(jsonToSend, token, is_driver); 
+      
+        // res.status(200).json(
+        //   jsonToSend);
+               }
+               function funName(list, token, is_driver) {
 
-  res.status(200).json({
-    list,
-    token,
-    is_driver   
-  });
- }
+                  res.status(200).json({
+                    list,
+                    token,
+                    is_driver   
+                  });}
+          }
+       }
+
+// user_history.forEach(async (element, index, array) => {
+
+//       let temp = element.poster;
+//       var value = await Register.findOne(temp).select('FirstName LastName Image Mobile')
+
+//       var jsonObject = JSON.parse("{}")
+
+
+//       jsonObject.is_trip_completed = element.is_trip_completed
+//       jsonObject.post_id = element._id
+//       jsonObject.pick_up = element.pick_up
+//       jsonObject.drop_off = element.drop_off
+//       jsonObject.time = element.time
+//       jsonObject.description = element.description
+//       jsonObject.first_name_passenger = value.first_name
+//       jsonObject.last_name_Passenger = value.last_name
+//       jsonObject.image_passenger = value.image
+//       jsonObject.mobile_passenger = value.mobile
+//       //jsonObject.Token = Token
+//       //jsonObject.is_driver = is_driver
+
+//       jsonToSend.push(jsonObject)
+
+//          if (index == array.length - 1) {
+          
+//              funName(jsonToSend, token, is_driver);
+//          }
+// });
+// function funName(list, token, is_driver) {
+
+//   res.status(200).json({
+//     list,
+//     token,
+//     is_driver   
+//   });
+//  }
 }
     });
   //       Register
@@ -383,140 +430,68 @@ export const liveDriver = async (req, res) => {
      });
 }
 
-
 // Get Passengers History
 export const passengerHistory = async (req, res) => { 
-
-  //const token = req.body.Token
+  
   const tkn = await Register.findOne({ token: req.query.token })
-  console.log(tkn._id);
-  //var jsonToSend = [];
-  //const tkn = await Register.findOne({ Token: req.body.Token })
-  //console.log(tkn._id);
-
-  //const checker = tkn.Is_driver_or_passenger;
+  
   var jsonToSend = [];
-  const { page = 1, limit = 5 } = req.query;
+  
     Register
    .findOne({_id: tkn._id })
-   .populate("plist",{ token: 0, poster:0}).limit(limit * 1).skip((page - 1) * limit) // key to populate
+   .populate("plist",{ token: 0, poster:0}) // key to populate
    .then(user => {
      const passenger_list = user.plist;
-     //var jsonarray = JSON.parse(JSON.stringify(passenger_list))
-
-       //function funName(jsonToSend) {
-    
-      // return res.status(200).send(jsonarray);
-       //}
+     
      if(passenger_list == ''){
        res.send('No History - 0 Posts')
      }
      else{
-      passenger_list.forEach(async (element, index, array) => {
+       fun_for_loop(passenger_list)
+
+
+  async function fun_for_loop(passenger_list) {
+
+      var index = 0
+      for (var element of passenger_list){
+        index++
 
         let temp = element.drivers;
-        //console.log('element - ',element)
         
-        var value = await Register.findOne(temp).select('first_name last_name image mobile')
-        //console.log('driver - ', value);
-  
-        //var jsonObject = JSON.parse(JSON.stringify(passenger_list))
+        var value = await Register
+        .findOne(temp)
+        .select('first_name last_name image mobile')
+        
         var jsonObject = JSON.parse("{}")
-        if(temp == undefined) {
-  
         jsonObject.is_trip_completed = element.is_trip_completed
         jsonObject.post_id = element._id
         jsonObject.pick_up = element.pick_up
         jsonObject.drop_off = element.drop_off
         jsonObject.time = element.time
         jsonObject.description = element.description
-        //jsonObject.FirstNamePassenger = value.FirstName
-        //jsonObject.LastNamePassenger = value.LastName
-        //jsonObject.ImagePassenger = value.Image
-        //jsonObject.MobilePassenger = value.Mobile
-        //jsonObject.Token = Token
-        //jsonObject.is_driver = is_driver
-      
-  
-        jsonToSend.push(jsonObject)
-      }
-      else{
-        jsonObject.is_trip_completed = element.is_trip_completed
-        jsonObject.post_id = element._id
-        jsonObject.pick_up = element.pick_up
-        jsonObject.drop_off = element.drop_off
-        jsonObject.time = element.time
-        jsonObject.description = element.description
+        if(temp != undefined) {
         jsonObject.first_name_passenger = value.first_name
         jsonObject.last_name_passenger = value.last_name
         jsonObject.image_passenger = value.image
         jsonObject.mobile_passenger = value.mobile
-        //jsonObject.Token = Token
-        //jsonObject.is_driver = is_driver
-      
-  
-        jsonToSend.push(jsonObject)
 
       }
-        
-  
-           if (index == array.length - 1) {
-            
-               funName(jsonToSend);
-           }
-  });
-  function funName(list) {
+
+      jsonToSend.push(jsonObject) 
+
+           if (index == passenger_list.length) {  
   
     res.status(200).json(
-      list  
-    );
+      jsonToSend);
+           }
+      }
    }
   }
-
-// passenger_list.forEach(async (element, index, array) => {
-//       let temp = element.drivers;
-//       //console.log(temp);
-//       if(temp != undefined) {
-      
-//       var value = await Register.findOne(temp).select('FirstName LastName Image Mobile');
-//       console.log('value', value.FirstName);
-//       // var jsonObject = JSON.parse("{}")
-
-//       // jsonObject.FirstNamePassenger = value.FirstName
-//       // jsonObject.LastNamePassenger = value.LastName
-//       // jsonObject.ImagePassenger = value.Image
-//       // jsonObject.MobilePassenger = value.Mobile
-
-//       // jsonToSend.push(jsonObject)
-//         jsonarray[index].FirstNameDriver = value.FirstName
-//         jsonarray[index].LastNameDriver = value.LastName
-//         jsonarray[index].ImageDriver = value.Image
-//         jsonarray[index].MobileDriver = value.Mobile
-        
-//         //function funName(jsonToSend) {
-//             return res.status(200).send(jsonarray);
-//         //}
-        
-//         }
-        
-        
-//          if (index == array.length - 1) {
-          
-//              funName(jsonarray);    
-//          }
-//         //  function funName(jsonToSend) {
-    
-//         //   res.status(200).send(jsonarray);
-//         //  }
-//        // return res.status(200).send(jsonarray);
-//     });
-
-//     // function funName(jsonToSend) {
-//     //   return res.status(200).send(jsonarray);
-//     // }
-//   }
    });
-} 
+}
+
+
+
 // Get user's profile by ID
 export const getUserProfile = (req, res) => {
     Register.findById(req.params.userID,{"_id":0, "FirstName":1,"LastName":1,"DOB":1,"Is_driver_or_passenger":1,"Image":1,"Mobile":1,"Email":1,"Gender":1,"Car_details":1}, (err, product) => {
@@ -572,8 +547,10 @@ export const addDriver = async (req, res, next) => {
     });
   }
   else{
+    console.log('tchecker ',tchecker)
   const tkn = await Register.findOne({ token: tchecker })
-  console.log(tkn._id); 
+  
+   console.log('entry - ',tkn); 
   const newPlace = new Pilot(req.body);
   //console.log(newPlace);
   //const data = requireLogin();
@@ -608,52 +585,91 @@ export const addDriver = async (req, res, next) => {
              if (err) {
                  res.send(err);
              }
-             //res.json(login);
-             login.forEach(async (element, index, array) => {
+             fun_for_loop(login)
 
-              let temp = element.poster;
-              var value = await Register.findOne(temp).select('first_name last_name image mobile')
-        
-              var jsonObject = JSON.parse("{}")
-        
-        
-              jsonObject.is_trip_completed = element.is_trip_completed
-              jsonObject.post_id = element._id
-              jsonObject.pick_up = element.pick_up
-              jsonObject.drop_off = element.drop_off
-              jsonObject.time = element.time
-              jsonObject.description = element.description
-              jsonObject.first_name_passenger = value.first_name
-              jsonObject.last_name_passenger = value.last_name
-              jsonObject.image_passenger = value.image
-              jsonObject.mobile_passenger = value.mobile
-        
-              jsonToSend.push(jsonObject)
-        
-                 if (index == array.length - 1) {
-                     funName(jsonToSend);
+
+             async function fun_for_loop(login) {
+           
+                 var index = 0
+                 for (var element of login){
+                   index++
+           
+                   let temp = element.poster;
+                   
+                   var value = await Register
+                   .findOne(temp)
+                   .select('first_name last_name image mobile')
+                   
+                   var jsonObject = JSON.parse("{}")
+                   jsonObject.is_trip_completed = element.is_trip_completed
+                   jsonObject.post_id = element._id
+                   jsonObject.pick_up = element.pick_up
+                   jsonObject.drop_off = element.drop_off
+                   jsonObject.time = element.time
+                   jsonObject.description = element.description
+                   if(temp != undefined) {
+                   jsonObject.first_name_passenger = value.first_name
+                   jsonObject.last_name_passenger = value.last_name
+                   jsonObject.image_passenger = value.image
+                   jsonObject.mobile_passenger = value.mobile
+           
                  }
-        });
-        //console.log(jsonToSend);
-        function funName(jsonToSend) {
-         // const isEmpty = jsonToSend.length;
-          //console.log('jsonToSend',isEmpty)
-         // var isEmpty = jsonToSend.length;
-         // console.log('empty',isEmpty )
-          //console.log('checking', jsonToSend.length)
-          //const decider = jsonToSend.length;
-          //console.log('hecking', decider);
-          if(jsonToSend.length > 0){
-            return res.status(200).json(
-              jsonToSend
-              );
-          }else{
-            //console.log('Emptybhai');
-            return res.status(201).json({
-              message: "No Passengers Postings"
-            });
-          }
-         }
+           
+                 jsonToSend.push(jsonObject) 
+           
+                      if (index == login.length) {  
+             
+               res.status(200).json(
+                 jsonToSend);
+                      }
+                 }
+              }
+             //res.json(login);
+        //      login.forEach(async (element, index, array) => {
+
+        //       let temp = element.poster;
+        //       var value = await Register.findOne(temp).select('first_name last_name image mobile')
+        
+        //       var jsonObject = JSON.parse("{}")
+        
+        
+        //       jsonObject.is_trip_completed = element.is_trip_completed
+        //       jsonObject.post_id = element._id
+        //       jsonObject.pick_up = element.pick_up
+        //       jsonObject.drop_off = element.drop_off
+        //       jsonObject.time = element.time
+        //       jsonObject.description = element.description
+        //       jsonObject.first_name_passenger = value.first_name
+        //       jsonObject.last_name_passenger = value.last_name
+        //       jsonObject.image_passenger = value.image
+        //       jsonObject.mobile_passenger = value.mobile
+        
+        //       jsonToSend.push(jsonObject)
+        
+        //          if (index == array.length - 1) {
+        //              funName(jsonToSend);
+        //          }
+        // });
+        // //console.log(jsonToSend);
+        // function funName(jsonToSend) {
+        //  // const isEmpty = jsonToSend.length;
+        //   //console.log('jsonToSend',isEmpty)
+        //  // var isEmpty = jsonToSend.length;
+        //  // console.log('empty',isEmpty )
+        //   //console.log('checking', jsonToSend.length)
+        //   //const decider = jsonToSend.length;
+        //   //console.log('hecking', decider);
+        //   if(jsonToSend.length > 0){
+        //     return res.status(200).json(
+        //       jsonToSend
+        //       );
+        //   }else{
+        //     //console.log('Emptybhai');
+        //     return res.status(201).json({
+        //       message: "No Passengers Postings"
+        //     });
+        //   }
+        //  }
          });
         }
   // let newDriver = new Pilot(req.body);
@@ -675,10 +691,11 @@ export const addDriver = async (req, res, next) => {
 
 export const confirmBooking = async (req, res, next) => {
   const postid = await Passenger.findOne({ _id: req.query.poster })
-  console.log(postid.poster);
+  //console.log(postid.poster);
   const tokenn = await Register.findOne({ token: req.query.token },{"_id":1,"first_name":1,"last_name":1, "image":1})
+  //console.log('token ', tokenn._id);
   const drvr = await Register.findOne({ _id: postid.poster },{"first_name":1,"last_name":1,"image":1});
-  console.log('new',drvr);
+  //console.log('new',drvr._id);
   
   //var upost = JSON.stringify(postid)
   //var drinfo = JSON.stringify(tokenn)
@@ -693,7 +710,7 @@ export const confirmBooking = async (req, res, next) => {
   //////new
   const user = await Register.findById(tokenn._id);
   const driveR = await Register.findById(postid.poster);
-  console.log('drive',driveR.fcm_token);
+  //console.log('drive',driveR);
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
   // await newPlace.save();
@@ -851,6 +868,7 @@ admin.messaging().send(message)
 
 export const passengerCancellation = async (req, res, next) => {
   const postid = await Pilot.findOne({ _id: req.query.poster })
+ // const postid = await Pilot.findOne({ _id: req.query.passenger })
   //console.log('poster',postid.myfavorite);
   const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1})
   const drvr = await Register.findOne({ _id: postid.myfavorite },{"first_name":1,"last_name":1,"image":1});
@@ -949,38 +967,44 @@ export const datahistory = async (req, res, next) => {
      }
      else{
 
-     
-
-user_history.forEach(async (element, index, array) => {
-
-      let temp = element.poster;
-      var value = await Register.findOne(temp).select('first_name last_name image mobile')
-
-      var jsonObject = JSON.parse("{}")
+      fun_for_loop(user_history)
 
 
-      jsonObject.is_trip_completed = element.is_trip_completed
-      jsonObject.post_id = element._id
-      jsonObject.pick_up = element.pick_up
-      jsonObject.drop_off = element.drop_off
-      jsonObject.time = element.time
-      jsonObject.description = element.description
-      jsonObject.first_name_passenger = value.first_name
-      jsonObject.last_name_passenger = value.last_name
-      jsonObject.image_passenger = value.image
-      jsonObject.mobile_passenger = value.mobile
+  async function fun_for_loop(user_history) {
 
-      jsonToSend.push(jsonObject)
+      var index = 0
+      for (var element of user_history){
+        index++
 
-         if (index == array.length - 1) {
-             funName(jsonToSend);
-         }
-});
-function funName(jsonToSend) {
-  res.status(200).json(
-    jsonToSend
-    );
- }
+        let temp = element.poster;
+        
+        var value = await Register
+        .findOne(temp)
+        .select('first_name last_name image mobile')
+        
+        var jsonObject = JSON.parse("{}")
+        jsonObject.is_trip_completed = element.is_trip_completed
+        jsonObject.post_id = element._id
+        jsonObject.pick_up = element.pick_up
+        jsonObject.drop_off = element.drop_off
+        jsonObject.time = element.time
+        jsonObject.description = element.description
+        jsonObject.first_name_passenger = value.first_name
+        jsonObject.last_name_passenger = value.last_name
+        jsonObject.image_passenger = value.image
+        jsonObject.mobile_passenger = value.mobile
+
+      
+
+      jsonToSend.push(jsonObject) 
+
+           if (index == user_history.length) {  
+  
+    res.status(200).json(
+      jsonToSend);
+           }
+      }
+   }
 }
     });
     }
@@ -998,7 +1022,6 @@ export const updateDriver = async (req, res) => {
   }    
 
 // passengers posting
-
 export const addUserRequest = async (req, res) => {
   const tchecker = req.body.token;
   const PickUp = req.body.pick_up
@@ -1052,6 +1075,7 @@ export const addUserRequest = async (req, res) => {
   await newPlace.save();
   user.plist.push(newPlace);
   await user.save();
+  var jsonToSend = [];
   //res.status(201).json(user);
   const { page = 1, limit = 5 } = req.query;
     Register
@@ -1072,38 +1096,47 @@ export const addUserRequest = async (req, res) => {
      }
      else{
 
-passenger_list.forEach(async (element, index, array) => {
-      let temp = element.drivers;
-      //console.log('driver_id - ',temp);
-      if(temp != undefined) {
+      fun_for_loop(passenger_list)
+
+
+      async function fun_for_loop(passenger_list) {
+    
+          var index = 0
+          for (var element of passenger_list){
+            index++
+    
+            let temp = element.drivers;
+            
+            var value = await Register
+            .findOne(temp)
+            .select('first_name last_name image mobile')
+            
+            var jsonObject = JSON.parse("{}")
+            jsonObject.is_trip_completed = element.is_trip_completed
+            jsonObject.post_id = element._id
+            jsonObject.pick_up = element.pick_up
+            jsonObject.drop_off = element.drop_off
+            jsonObject.time = element.time
+            jsonObject.description = element.description
+            if(temp != undefined) {
+            jsonObject.first_name_passenger = value.first_name
+            jsonObject.last_name_passenger = value.last_name
+            jsonObject.image_passenger = value.image
+            jsonObject.mobile_passenger = value.mobile
+
+           // jsonToSend.push(jsonObject)
+    
+          }
+    
+          jsonToSend.push(jsonObject) 
+    
+               if (index == passenger_list.length) {  
       
-      var value = await Register.findOne(temp).select('first_name last_name image mobile');
-      console.log('value', value.first_name);
-      // var jsonObject = JSON.parse("{}")
-
-      // jsonObject.FirstNamePassenger = value.FirstName
-      // jsonObject.LastNamePassenger = value.LastName
-      // jsonObject.ImagePassenger = value.Image
-      // jsonObject.MobilePassenger = value.Mobile
-
-      // jsonToSend.push(jsonObject)
-        jsonarray[index].first_name_driver = value.first_name
-        jsonarray[index].last_name_driver = value.last_name
-        jsonarray[index].image_driver = value.image
-        jsonarray[index].mobile_driver = value.mobile
-        
-        // function funName(jsonToSend) {
-        //return res.status(200).send(jsonarray);
-        // }
-        
-        }
-        
-        
-         if (index == array.length - 1) {
-          
-             funName(jsonarray);
-         }
-    });
+        res.status(200).json(
+          jsonToSend);
+               }
+          }
+       }
     // function funName(jsonToSend) {
     //   return res.status(200).send(jsonarray);
     // }
@@ -1126,6 +1159,8 @@ passenger_list.forEach(async (element, index, array) => {
     // });
 
 }
+
+
 
 export const getPassengerWithId = async (req, res) => {
    const tkn = await Register.findOne({ token: req.body.token })

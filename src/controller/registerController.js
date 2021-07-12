@@ -521,12 +521,7 @@ export const getEmail = (req, res) => {
         });
       }
 //let ra      
-// export const tom = (requireLogin) => {
-//   //let ra = requireLogin
-//   console.log('test')
-//   console.log(requireLogin)
-//    return addDriver
-//   }
+
 
 export const addDriver = async (req, res, next) => {
   const tchecker = req.body.token;
@@ -558,9 +553,32 @@ export const addDriver = async (req, res, next) => {
   //const data = requireLogin();
   
   const user = await Register.findById(tkn._id);
-  newPlace.myfavorite = user; //myfavorite
-  await newPlace.save();
-  user.favlist.push(newPlace);
+  
+  console.log('driver post', user.favlist);
+  if(user.favlist == []){
+    newPlace.myfavorite = user; //myfavorite
+    await newPlace.save();
+    user.favlist.push(newPlace);
+  }
+  //
+  else{
+    //console.log('postID - ',req.body.postID);
+    //console.log('pass', req.body.find_passenger);
+    //console.log('local ', local);
+ 
+await Pilot.findOneAndUpdate( {_id: req.body.postID},  {
+      $set: {
+        find_passenger : req.body.find_passenger,
+        locality : local,
+        ride_type :ridetype,
+        is_trip_completed :req.body.is_trip_completed,
+        trip_cancel :req.body.trip_cancel
+      },
+    }, { new: true });
+
+
+  }
+  
   //const locality = req.body.locality
   //var dateTimeTofilter = moment().subtract(1, 'year');
   var currentdate = new Date(); 
@@ -1213,8 +1231,8 @@ export const getPassengerWithId = async (req, res) => {
    const tkn = await Register.findOne({ token: req.body.token })
    console.log(tkn._id);
   //const {placeID} = req.params;
-    const userpost =  await Register.findById(tkn._id).populate('favlist');
-    res.status(200).json(userpost.favlist) ;
+    //const userpost =  await Register.findById(tkn._id).populate('favlist');
+    res.status(200).json(tkn) ;
   // Register.findById({_id: req.params.placeID},(err, product) => {
 
   //     if (err) {

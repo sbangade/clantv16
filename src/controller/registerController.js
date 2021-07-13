@@ -1210,6 +1210,7 @@ export const addUserRequest = async (req, res) => {
             jsonObject.post_id = element._id
             jsonObject.is_trip_completed = element.is_trip_completed
             jsonObject.got_driver = element.got_driver
+            jsonObject.trip_cancel = element.trip_cancel
             jsonObject.pick_up = element.pick_up
             jsonObject.drop_off = element.drop_off
             jsonObject.time = element.time

@@ -838,10 +838,10 @@ export const bookingCancellation = async (req, res, next) => {
   let oppid = 0;
   if( newdata == req.query.token){
     console.log('driver',postid.drivers)
-    oppid = postid.drivers;
+    oppid = postid.poster;
   }else{
     console.log('passenger',postid.poster)
-    oppid = postid.poster;
+    oppid = postid.drivers;
   }
   console.log('opposition', oppid);
   //console.log(tokenn);
@@ -854,7 +854,7 @@ export const bookingCancellation = async (req, res, next) => {
   
   //////new
   //const user = await Register.findById(tokenn._id);
-  const driveR = await Register.findById(oppid);
+  
   //console.log('drive',driveR.fcm_token);
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
@@ -889,6 +889,7 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
     //    if (err) { throw err; }
     //    else { console.log("Updated"); }
     //  }); 
+    const driveR = await Register.findById(oppid);
     if( driveR.got_driver == false ){
       res.status(200).json({
         message: "Booking Cancelled"
@@ -901,6 +902,7 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
       });
      }
      else{
+      
   //await user.save();
   const registrationToken = driveR.fcm_token;
 
@@ -1173,7 +1175,7 @@ export const addUserRequest = async (req, res) => {
   const { page = 1, limit = 5 } = req.query;
     Register
    .findOne({_id: tkn._id })
-   .populate("plist",{ token: 0, poster: 0, _id: 0 }).limit(limit * 1).skip((page - 1) * limit) // key to populate
+   .populate("plist",{ token: 0, poster: 0 }).limit(limit * 1).skip((page - 1) * limit) // key to populate
    .then(user => {
      const passenger_list = user.plist;
      //console.log('passengers - ',passenger_list);
@@ -1205,9 +1207,9 @@ export const addUserRequest = async (req, res) => {
             .select('first_name last_name image mobile')
             
             var jsonObject = JSON.parse("{}")
+            jsonObject.post_id = element._id
             jsonObject.is_trip_completed = element.is_trip_completed
             jsonObject.got_driver = element.got_driver
-            jsonObject.post_id = element._id
             jsonObject.pick_up = element.pick_up
             jsonObject.drop_off = element.drop_off
             jsonObject.time = element.time

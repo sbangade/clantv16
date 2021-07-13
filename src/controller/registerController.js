@@ -567,8 +567,12 @@ export const addDriver = async (req, res, next) => {
     //console.log('postID - ',req.body.postID);
     //console.log('pass', req.body.find_passenger);
     //console.log('local ', local);
+    const drtoken = user.favlist;
+    const newtoken = "'"+drtoken+"'";
+    console.log('postID', newtoken);
+
  
-await Pilot.findOneAndUpdate( {_id: req.body.postID},  {
+await Pilot.findOneAndUpdate( {_id: drtoken},  {
       $set: {
         find_passenger : req.body.find_passenger,
         locality : local,
@@ -821,7 +825,17 @@ export const bookingCancellation = async (req, res, next) => {
   console.log('poster',postid.poster);
   const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1});
   const drvr = await Register.findOne({ _id: postid.poster },{"first_name":1,"last_name":1,"image":1});
-  console.log('new',drvr);
+  console.log('new data', postid.token);
+  const newdata = postid.token;
+  let oppid = 0;
+  if( newdata == req.query.token){
+    console.log('driver',postid.drivers)
+    oppid = postid.drivers;
+  }else{
+    console.log('passenger',postid.poster)
+    oppid = postid.poster;
+  }
+  console.log('opposition', oppid);
   //console.log(tokenn);
                //const {placeID} = req.params;
   //const data = await Register.findOne({Token: tkn});
@@ -832,7 +846,7 @@ export const bookingCancellation = async (req, res, next) => {
   
   //////new
   //const user = await Register.findById(tokenn._id);
-  const driveR = await Register.findById(postid.poster);
+  const driveR = await Register.findById(oppid);
   console.log('drive',driveR.fcm_token);
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
@@ -853,8 +867,7 @@ export const bookingCancellation = async (req, res, next) => {
 Passenger.findOneAndUpdate({_id: postid._id}, { $set:
               {
                 trip_cancel: true,
-                got_driver: false,
-                drivers: tokenn._id
+                got_driver: false
               }}, null, function(err,doc) {
            if (err) { throw err; }
            else { console.log("Updated"); }
@@ -913,105 +926,105 @@ admin.messaging().send(message)
 
 //passenger calcelling trip  
 
-export const passengerCancellation = async (req, res, next) => {
-  //const postid = await Pilot.findOne({ _id: req.query.driverpost })
-  const passid = await Passenger.findOne({ _id: req.query.poster })
-  //console.log('poster',postid.myfavorite);
-  const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1})
-  const drvr = await Register.findOne({ _id: passid.drivers },{"first_name":1,"last_name":1,"image":1});
-  console.log('new',drvr);
-  //console.log(tokenn);
-               //const {placeID} = req.params;
-  //const data = await Register.findOne({Token: tkn});
-  //console.log(data._id); 
-               //const newPlace = new Pilot(req.body);
-  //console.log(newPlace);
-  //const data = requireLogin();
+// export const passengerCancellation = async (req, res, next) => {
+//   //const postid = await Pilot.findOne({ _id: req.query.driverpost })
+//   const passid = await Passenger.findOne({ _id: req.query.poster })
+//   //console.log('poster',postid.myfavorite);
+//   const tokenn = await Register.findOne({ token: req.query.token },{"first_name":1,"last_name":1})
+//   const drvr = await Register.findOne({ _id: passid.drivers },{"first_name":1,"last_name":1,"image":1});
+//   console.log('new',drvr);
+//   //console.log(tokenn);
+//                //const {placeID} = req.params;
+//   //const data = await Register.findOne({Token: tkn});
+//   //console.log(data._id); 
+//                //const newPlace = new Pilot(req.body);
+//   //console.log(newPlace);
+//   //const data = requireLogin();
   
-  //////new
-  //const user = await Register.findById(tokenn._id);
-  const driveR = await Register.findById(passid.drivers);
-  console.log('drive',driveR.fcm_token);
-  //console.log(user);
-  // newPlace.myfavorite = user; //myfavorite
-  // await newPlace.save();
- // const cancellation = user.history.filter(x => {
-  //   return x.id != postid;
-  // })
-  // Register.findOneAndUpdate(
-  //   {_id: tokenn._id},
-  //   { $pull: { history: { _id: postid._id } } }, // Here , id is variable where your userid is stored
-  //   { multi: true }
-  // )
+//   //////new
+//   //const user = await Register.findById(tokenn._id);
+//   const driveR = await Register.findById(passid.drivers);
+//   console.log('drive',driveR.fcm_token);
+//   //console.log(user);
+//   // newPlace.myfavorite = user; //myfavorite
+//   // await newPlace.save();
+//  // const cancellation = user.history.filter(x => {
+//   //   return x.id != postid;
+//   // })
+//   // Register.findOneAndUpdate(
+//   //   {_id: tokenn._id},
+//   //   { $pull: { history: { _id: postid._id } } }, // Here , id is variable where your userid is stored
+//   //   { multi: true }
+//   // )
   
-  // user.history.remove(postid);
-  //console.log("req.body.poster", req.body.poster);
-  //console.log("postid", postid);
-  //console.log("postid._id", postid._id);
+//   // user.history.remove(postid);
+//   //console.log("req.body.poster", req.body.poster);
+//   //console.log("postid", postid);
+//   //console.log("postid._id", postid._id);
 
-  //passenger
-  Passenger.findOneAndUpdate({_id: passid._id}, { $set:
-    {
-      trip_cancel: true,
-      got_driver: false,
-      drivers: tokenn._id
-    }}, null, function(err,doc) {
- if (err) { throw err; }
- else { console.log("Updated"); }
-}); 
-  // driver
-  // Pilot.findOneAndUpdate({_id: postid._id}, { $set:
-  //             {
-  //               trip_cancel: true
-  //               //got_driver: false,
-  //               //drivers: tokenn._id
-  //             }}, null, function(err,doc) {
-  //          if (err) { throw err; }
-  //          else { console.log("Updated"); }
-  //        }); 
+//   //passenger
+//   Passenger.findOneAndUpdate({_id: passid._id}, { $set:
+//     {
+//       trip_cancel: true,
+//       got_driver: false,
+//       drivers: tokenn._id
+//     }}, null, function(err,doc) {
+//  if (err) { throw err; }
+//  else { console.log("Updated"); }
+// }); 
+//   // driver
+//   // Pilot.findOneAndUpdate({_id: postid._id}, { $set:
+//   //             {
+//   //               trip_cancel: true
+//   //               //got_driver: false,
+//   //               //drivers: tokenn._id
+//   //             }}, null, function(err,doc) {
+//   //          if (err) { throw err; }
+//   //          else { console.log("Updated"); }
+//   //        }); 
          
 
- if( driveR.fcm_token == null){
-  res.status(200).json({
-    message: "FCM Token Is Null"
-  });
- }
- else{
-//  await user.save();
-  const registrationToken = driveR.fcm_token;
+//  if( driveR.fcm_token == null){
+//   res.status(200).json({
+//     message: "FCM Token Is Null"
+//   });
+//  }
+//  else{
+// //  await user.save();
+//   const registrationToken = driveR.fcm_token;
 
 
-const message = {
-  data: {
-    score: ''+passid+'',
-    driveer: ''+drvr+''
-  },
-  token: registrationToken
-};
+// const message = {
+//   data: {
+//     score: ''+passid+'',
+//     driveer: ''+drvr+''
+//   },
+//   token: registrationToken
+// };
 
-// Send a message to the device corresponding to the provided
-// registration token.
-admin.messaging().send(message)
-  .then((response) => {
-    // Response is a message ID string.
-    console.log('Successfully sent message:', response);
-  })
-  .catch((error) => {
-    console.log('Error sending message:', error);
-  });
+// // Send a message to the device corresponding to the provided
+// // registration token.
+// admin.messaging().send(message)
+//   .then((response) => {
+//     // Response is a message ID string.
+//     console.log('Successfully sent message:', response);
+//   })
+//   .catch((error) => {
+//     console.log('Error sending message:', error);
+//   });
 
-  res.status(200).json({
-    message: "Booking Cancelled"
-  });
-}
+//   res.status(200).json({
+//     message: "Booking Cancelled"
+//   });
+// }
   
-  // await Passenger.find({},{"_id":0},(err, login) => {
-  //            if (err) {
-  //                res.send(err);
-  //            }
-  //            res.json(login);
-  //        });       
-    }     
+//   // await Passenger.find({},{"_id":0},(err, login) => {
+//   //            if (err) {
+//   //                res.send(err);
+//   //            }
+//   //            res.json(login);
+//   //        });       
+//     }     
 
 // drivers history (The booking he/she took)
 export const datahistory = async (req, res, next) => {

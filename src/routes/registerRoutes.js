@@ -15,7 +15,6 @@ import { addnewRegister,
          liveDriver,
          tokenGenerator,
          bookingCancellation,
-         passengerCancellation,
          uploadImage
 } from '../controller/registerController';
 import express from 'express';
@@ -67,8 +66,8 @@ app.route('/booking')
 app.route('/cancel')   // driver calcelling trip
     .get(bookingCancellation);
     
-app.route('/tripcancel')  // passenget cancelling trip
-    .get(passengerCancellation);        
+// app.route('/tripcancel')  // passenget cancelling trip
+//     .get(passengerCancellation);        
     
 app.route('/history') 
     .get(datahistory);        

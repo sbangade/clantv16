@@ -295,6 +295,7 @@ export const userLogin = (req, res, next) => {
             var jsonObject = JSON.parse("{}")
             jsonObject.is_trip_completed = element.is_trip_completed
             jsonObject.got_driver = element.got_driver
+            jsonObject.trip_cancel = element.trip_cancel
             jsonObject.post_id = element._id
             jsonObject.pick_up = element.pick_up
             jsonObject.drop_off = element.drop_off
@@ -466,6 +467,7 @@ export const passengerHistory = async (req, res) => {
         var jsonObject = JSON.parse("{}")
         jsonObject.is_trip_completed = element.is_trip_completed
         jsonObject.got_driver = element.got_driver
+        jsonObject.trip_cancel = element.trip_cancel
         jsonObject.post_id = element._id
         jsonObject.pick_up = element.pick_up
         jsonObject.drop_off = element.drop_off
@@ -1048,6 +1050,7 @@ export const datahistory = async (req, res, next) => {
         var jsonObject = JSON.parse("{}")
         jsonObject.is_trip_completed = element.is_trip_completed
         jsonObject.got_driver = element.got_driver
+        jsonObject.trip_cancel = element.trip_cancel
         jsonObject.post_id = element._id
         jsonObject.pick_up = element.pick_up
         jsonObject.drop_off = element.drop_off

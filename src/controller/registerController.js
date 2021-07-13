@@ -423,8 +423,14 @@ export const driverHistory = async (req, res) => {
   )
    });
 }
+//{ "find_passenger": { $eq: true }
 export const liveDriver = async (req, res) => { 
-  await Pilot.find({ "find_passenger": { $eq: true } },(err, login) => {
+  await Pilot.find({  $and: [
+    // { $text: { $search: "sarnia" } }
+   {find_passenger: true},
+   {locality: /sarnia/i}
+ 
+ ] },(err, login) => {
          if (err) {
              res.send(err);
          }
@@ -759,10 +765,11 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
 
 
   await user.save();
+  console.log('fcm ',driveR.fcm_token)
 
-  if( driveR.fcm_token == null){
+  if( driveR.fcm_token == null || driveR.fcm_token == undefined || driveR.fcm_token == ""){
     res.status(200).json({
-      message: "FCM Token Is Null"
+      message: " Bokking Confirmerd but FCM Token Is Null"
     });
    }
    else{
@@ -808,6 +815,7 @@ admin.messaging().send(message)
     message: "Booking Confirmed"
   });
 }
+
   
   // await Passenger.find({},{"_id":0},(err, login) => {
   //            if (err) {
@@ -847,7 +855,7 @@ export const bookingCancellation = async (req, res, next) => {
   //////new
   //const user = await Register.findById(tokenn._id);
   const driveR = await Register.findById(oppid);
-  console.log('drive',driveR.fcm_token);
+  //console.log('drive',driveR.fcm_token);
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
   // await newPlace.save();
@@ -881,11 +889,15 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
     //    if (err) { throw err; }
     //    else { console.log("Updated"); }
     //  }); 
-         
-
-     if( driveR.fcm_token == null){
+    if( driveR.got_driver == false ){
       res.status(200).json({
-        message: "FCM Token Is Null"
+        message: "Booking Cancelled"
+      });
+    }else{    
+
+     if( driveR.fcm_token == null || driveR.fcm_token == undefined || driveR.fcm_token == ""){
+      res.status(200).json({
+        message: "Booking Cancelled FCM Token Is Null"
       });
      }
      else{
@@ -915,6 +927,7 @@ admin.messaging().send(message)
     message: "Booking Cancelled"
   });
 }
+    }
   
   // await Passenger.find({},{"_id":0},(err, login) => {
   //            if (err) {

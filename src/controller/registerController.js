@@ -508,7 +508,7 @@ export const passengerHistory = async (req, res) => {
 export const getUserProfile = async (req, res) => {
   const postid = await Register.findOne({ token: req.query.token },{"_id":0,"plist": 0,"favlist": 0, "history": 0,"password": 0, "fcm_token":0, "token": 0})
   //res.send(postid);
-  res.status(200).json({ profile:postid});
+  res.status(200).json(postid);
 
 
     //     if (err) {
@@ -566,7 +566,7 @@ export const getEmail = async (req, res) => {
         const Password = obj[0].password;
         const Token = obj[0].token;
         const Emailaddress = obj[0].email;
-        console.log('password - ',Password, Token, Emailaddress)
+        //console.log('password - ',Password, Token, Emailaddress)
         var transporter = nodemailer.createTransport({
           service: 'gmail',
           auth: {

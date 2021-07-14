@@ -15,6 +15,7 @@ import { addnewRegister,
          liveDriver,
          tokenGenerator,
          bookingCancellation,
+         sendEmail,
          uploadImage
 } from '../controller/registerController';
 import express from 'express';
@@ -45,17 +46,22 @@ app.route('/token')  // both token generating - login
     .post(tokenGenerator);    
  
 // get a specific user's profile    
-app.route('/profile/:userID')
+app.route('/profile')
     .get(getUserProfile) 
 
-// Forgot password    
+// Forgot password
+    
 app.route('/forgot')
     .post(getEmail);
+
+app.route('/sendemail')
+    .get(sendEmail);    
 
 // driver posting route    
 app.route('/driver') 
     .post(addDriver)
-    .get(driverHistory);
+    .get(driverHistory)
+    .put(updateDriver);
 app.route('/livedriver')  // online driver only
     .get(liveDriver);    
     
@@ -72,8 +78,7 @@ app.route('/cancel')   // driver calcelling trip
 app.route('/history') 
     .get(datahistory);        
 
-app.route('/driver/:productID')     
-    .put(updateDriver); 
+ 
 
 
        

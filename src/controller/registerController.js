@@ -4,6 +4,8 @@ import {JWT_SECRET} from '../config/keys';
 import moment from 'moment';
 import fs from 'fs';
 import mime from 'mime';
+import nodemailer from 'nodemailer';
+//var nodemailer = require('nodemailer');
 //import upload from '../middleware/upload';
 //import requireLogin from '../middleware/requireLogin';
 // const jwt = require('jsonwebtoken')
@@ -503,28 +505,93 @@ export const passengerHistory = async (req, res) => {
 
 
 // Get user's profile by ID
-export const getUserProfile = (req, res) => {
-    Register.findById(req.params.userID,{"_id":0, "FirstName":1,"LastName":1,"DOB":1,"Is_driver_or_passenger":1,"Image":1,"Mobile":1,"Email":1,"Gender":1,"Car_details":1}, (err, product) => {
+export const getUserProfile = async (req, res) => {
+  const postid = await Register.findOne({ token: req.query.token },{"_id":0,"plist": 0,"favlist": 0, "history": 0,"password": 0, "fcm_token":0, "token": 0})
+  //res.send(postid);
+  res.status(200).json({ profile:postid});
 
-        if (err) {
-            res.send(err);
-        }
+
+    //     if (err) {
+    //         res.send(err);
+    //     }
         
-        res.json(product);
-    });
+    //     res.json(product);
+    // });
 }
-export const getEmail = (req, res) => {
-    Register.find({ email: req.body.email })
+
+export const sendEmail = (req, res) => {
+var transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: 'c0773230project@gmail.com',
+    pass: 'C0773230@'
+  }
+});
+
+var mailOptions = {
+  from: 'c0773230project@gmail.com',
+  to: 'sbangade1995@gmail.com',
+  subject: 'Try',
+  text: `Welcome to Kaliron's Clanit app`
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    //console.log('Email sent: ' + info.response);
+    return res.status(201).json({
+      message: "Email Sent Successfully!"
+    });
+  }
+});
+}
+
+
+export const getEmail = async (req, res) => {
+    await Register.find({ email: req.body.email })
     .exec()
     .then(user => {
+      
       if (user.length < 1) {
         return res.status(401).json({
           message: "Email doesnt exist."
         });
       }else{
-        return res.status(201).json({
-            message: "Login Successfully"
-          });
+        // return res.status(201).json({
+        //     message: "Login Successfully"
+        //   });
+        //var STRING = user.toString();
+        const obj = {...user};
+        const Password = obj[0].password;
+        const Token = obj[0].token;
+        const Emailaddress = obj[0].email;
+        console.log('password - ',Password, Token, Emailaddress)
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'c0773230project@gmail.com',
+            pass: 'C0773230@'
+          }
+        });
+        
+        var mailOptions = {
+          from: 'c0773230project@gmail.com',
+          to: Emailaddress,
+          subject: 'Try',
+          text: 'Here is your login credentials \n Password: '+Password+'\n Email: '+Emailaddress+'\n Token: '+Token
+        };
+        
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+          } else {
+            //console.log('Email sent: ' + info.response);
+            return res.status(201).json({
+              message: "Email Sent Successfully!"
+            });
+          }
+        });
             }
         });
       }
@@ -1106,7 +1173,7 @@ export const datahistory = async (req, res, next) => {
 
 // update driver
 export const updateDriver = async (req, res) => {
-     const data = await Pilot.findOneAndUpdate({_id: req.params.productID}, req.body, { new: true, useFindAndModify: false });
+     const data = await Pilot.findOneAndUpdate({_id: req.body.personid}, req.body, { new: true, useFindAndModify: false });
      res.json(data);
     // , (err, product) => {
     //     if (err) {
@@ -1260,7 +1327,7 @@ export const addUserRequest = async (req, res) => {
 
 
 export const getPassengerWithId = async (req, res) => {
-   const tkn = await Register.findOne({ token: req.body.token })
+   const tkn = await Register.findOne({ token: req.query.token })
    console.log(tkn._id);
   //const {placeID} = req.params;
     //const userpost =  await Register.findById(tkn._id).populate('favlist');
@@ -1275,7 +1342,7 @@ export const getPassengerWithId = async (req, res) => {
   // });
 }
 export const updatePassenger = (req, res) => {
-    Passenger.findOneAndUpdate({_id: req.params.placeID}, req.body, { new: true, useFindAndModify: false }, (err, product) => {
+    Passenger.findOneAndUpdate({_id: req.body.postid}, req.body, { new: true, useFindAndModify: false }, (err, product) => {
         if (err) {
             res.send(err);
         }

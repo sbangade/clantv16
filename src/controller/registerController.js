@@ -449,7 +449,10 @@ export const passengerHistory = async (req, res) => {
   
     Register
    .findOne({_id: tkn._id })
-   .populate("plist",{ token: 0, poster:0}) // key to populate
+   .populate({ 
+    path: 'plist', 
+    options: { sort: { time : 1 } } 
+  }) // key to populate
    .then(user => {
      const passenger_list = user.plist;
      
@@ -607,7 +610,7 @@ export const addDriver = async (req, res, next) => {
     return res.status(401).json({
       message: "Please enter your token"
     });
-  }
+  }   
   if( local == '' || local == undefined){
     return res.status(401).json({
       message: "Please Enter Locality"
@@ -770,7 +773,9 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
         //     });
         //   }
         //  }
-         });
+         }).sort({
+          time: 1
+      });
         }
   // let newDriver = new Pilot(req.body);
   // newDriver.save((err, driver) => {
@@ -1116,7 +1121,10 @@ export const datahistory = async (req, res, next) => {
 
  Register
    .findOne({_id: tkn._id })
-   .populate("history",{ token: 0 }) // key to populate
+   .populate({ 
+    path: 'history', 
+    options: { sort: { time : 1 } } 
+  }) // key to populate
    .then(user => {
      const user_history = user.history;
      //console.log('history',user_history);
@@ -1239,10 +1247,13 @@ export const addUserRequest = async (req, res) => {
   await user.save();
   var jsonToSend = [];
   //res.status(201).json(user);
-  const { page = 1, limit = 5 } = req.query;
+  //const { page = 1, limit = 5 } = req.query;
     Register
    .findOne({_id: tkn._id })
-   .populate("plist",{ token: 0, poster: 0 }).limit(limit * 1).skip((page - 1) * limit) // key to populate
+   .populate({ 
+    path: 'plist', 
+    options: { sort: { time : 1 } } 
+  }) // key to populate
    .then(user => {
      const passenger_list = user.plist;
      //console.log('passengers - ',passenger_list);

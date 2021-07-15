@@ -16,7 +16,8 @@ import { addnewRegister,
          tokenGenerator,
          bookingCancellation,
          sendEmail,
-         uploadImage
+         uploadImage,
+         onlinePilot
 } from '../controller/registerController';
 import express from 'express';
 
@@ -55,8 +56,11 @@ app.route('/forgot')
     .post(getEmail);
 
 app.route('/sendemail')
-    .get(sendEmail);    
+    .get(sendEmail);
 
+// driver going online
+app.route('/online')
+    .post(onlinePilot);    
 // driver posting route    
 app.route('/driver') 
     .post(addDriver)

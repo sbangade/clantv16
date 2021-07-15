@@ -451,7 +451,7 @@ export const passengerHistory = async (req, res) => {
    .findOne({_id: tkn._id })
    .populate({ 
     path: 'plist', 
-    options: { sort: { time : 1 } } 
+    options: { sort: { time : -1 } } 
   }) // key to populate
    .then(user => {
      const passenger_list = user.plist;
@@ -599,8 +599,34 @@ export const getEmail = async (req, res) => {
         });
       }
 //let ra      
+export const onlinePilot = async (req, res, next) => {
+  const tchecker = req.body.token;
+  const finding = req.body.find_passenger;
+  
+ 
+  if(tchecker == '' || tchecker == undefined){
+    return res.status(401).json({
+      message: "Please enter your token"
+    });
+  }   
+  if( finding == '' || finding == undefined){
+    return res.status(401).json({
+      message: "Please Enter Locality"
+    });
+  }
+  else{
+    await Pilot.findOneAndUpdate( {token: tchecker},  {
+      $set: {
+        find_passenger : finding
+      },
+    }, { new: true });
+    return res.status(201).json({
+      message: "Finding Passengers for you..."
+    }); 
+  }
+}
 
-
+// Driver posting
 export const addDriver = async (req, res, next) => {
   const tchecker = req.body.token;
   const local = req.body.locality;
@@ -1129,7 +1155,7 @@ export const datahistory = async (req, res, next) => {
    .findOne({_id: tkn._id })
    .populate({ 
     path: 'history', 
-    options: { sort: { time : 1 } } 
+    options: { sort: { time : -1 } } 
   }) // key to populate
    .then(user => {
      const user_history = user.history;

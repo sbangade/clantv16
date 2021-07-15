@@ -17,7 +17,9 @@ import { addnewRegister,
          bookingCancellation,
          sendEmail,
          uploadImage,
-         onlinePilot
+         onlinePilot,
+         emailVeriication,
+         emailResend
 } from '../controller/registerController';
 import express from 'express';
 
@@ -38,6 +40,14 @@ app.route('/register') //registration
         next();
     }, getRegister) //getRegistration
     .post(addnewRegister);
+
+// Email Verification
+app.route('/verify')
+    .get(emailVeriication); 
+
+// Resend email    
+app.route('/resend')
+    .get(emailResend);     
 
     // Login Route
 app.route('/login')

@@ -121,35 +121,83 @@ export const addnewRegister = (req, res, next) => {
           //   newRegister.Image = req.file.path
           // }
         newRegister.save();
-        return res.status(200).json({
-          message: "Registered successfully!"
+        let password = Math.random() * (1000000 - 100000) + 100000;
+        password = Math.ceil(password);
+        console.log('password - ', password)
+        //password = password.toString();
+      //   Register.findOneAndUpdate({email: mail }, { $set:
+      //     {
+      //       everification: password
+            
+      //     }
+      //  })
+      // const data = Register.findOne( mail )
+      // console.log('data ', data)
+        var transporter = nodemailer.createTransport({
+          service: 'gmail',
+          auth: {
+            user: 'c0773230project@gmail.com',
+            pass: 'C0773230@'
+          }
         });
+        
+        var mailOptions = {
+          from: 'c0773230project@gmail.com',
+          to: mail,
+          subject: 'Try',
+          text: 'Your email verification code: '+password
+        };
+        
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            console.log(error);
+          } else {
+            Register.findOneAndUpdate( { email: mail},  {
+              $set: {
+                everification : password
+              },
+            }, { new: true }, (err, product) => {
+                  if (err) {
+                      res.send(err);
+                  }
+                     return res.status(201).json({
+                    message: "Email Sent Successfully!"
+                });
+              });
+            //console.log('Email sent: ' + info.response);
+            // return res.status(201).json({
+            //   message: "Email Sent Successfully!"
+            // });
+          }
+        });
+      
+        
        // return res.status(200).json({
          // message: "Registered successfully!"
         //});
-        var matches = req.body.image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/),
-        response = {};
+        // var matches = req.body.image.match(/^data:([A-Za-z-+/]+);base64,(.+)$/),
+        // response = {};
          
-        if (matches.length !== 3) {
-        return new Error('Invalid input string');
-        }
+        // if (matches.length !== 3) {
+        // return new Error('Invalid input string');
+        // }
          
-        response.type = matches[1];
-        response.data = new Buffer(matches[2], 'base64');
-        let decodedImg = response;
-        let imageBuffer = decodedImg.data;
-        let type = decodedImg.type;
-        let extension = mime.extension(type);
-        let fileName = "image." + extension;
-        try {
-        fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
-        // return res.status(200).json({
-        //   message: "Registered successfully!"
-        // });
-        } 
-        catch (e) {
-        next(e);
-        }
+        // response.type = matches[1];
+        // response.data = new Buffer(matches[2], 'base64');
+        // let decodedImg = response;
+        // let imageBuffer = decodedImg.data;
+        // let type = decodedImg.type;
+        // let extension = mime.extension(type);
+        // let fileName = "image." + extension;
+        // try {
+        // fs.writeFileSync("./images/" + fileName, imageBuffer, 'utf8');
+        // // return res.status(200).json({
+        // //   message: "Registered successfully!"
+        // // });
+        // } 
+        // catch (e) {
+        // next(e);
+        // }
       }else{
         return res.status(401).json({
           message: "Email already exist."
@@ -158,6 +206,105 @@ export const addnewRegister = (req, res, next) => {
     });
   } 
 
+  
+}
+// Resend email
+export const emailResend = async (req, res) => { 
+  let mail = req.query.email 
+  let password = Math.random() * (1000000 - 100000) + 100000;
+  password = Math.ceil(password);
+  console.log('password - ', password)
+
+  //password = password.toString();
+//   Register.findOneAndUpdate({email: mail }, { $set:
+//     {
+//       everification: password
+      
+//     }
+//  })
+// const data = Register.findOne( mail )
+// console.log('data ', data)
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'c0773230project@gmail.com',
+      pass: 'C0773230@'
+    }
+  });
+  
+  var mailOptions = {
+    from: 'c0773230project@gmail.com',
+    to: mail,
+    subject: 'Try',
+    text: 'Your email verification code: '+password
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      console.log(error);
+    } else {
+      Register.findOneAndUpdate( { email: mail},  {
+        $set: {
+          everification : password
+        },
+      }, { new: true }, (err, product) => {
+            if (err) {
+                res.send(err);
+            }
+               return res.status(201).json({
+              message: "Email Sent Successfully!"
+          });
+        });
+      //console.log('Email sent: ' + info.response);
+      // return res.status(201).json({
+      //   message: "Email Sent Successfully!"
+      // });
+    }
+  });
+
+
+}
+  //password = password.toString();
+//   Register.findOneAndUpdate({email: mail }, { $set:
+//     {
+//       everification: password
+      
+//     }
+//  })
+// const data = Register.findOne( mail )
+// console.log('data ', data)
+ 
+  
+
+/// Email verification
+export const emailVeriication = async (req, res) => { 
+  let mail = req.query.email
+  let code = req.query.code
+  const tkn = await Register.findOne({ email: req.query.email })
+  if(code == tkn.everification){
+    // return res.status(201).json({
+    //   message: "Email verified successfully"
+    // });
+    Register.findOneAndUpdate( { email: mail},  {
+      $set: {
+        emailverified : true
+      },
+    }, { new: true }, (err, product) => {
+          if (err) {
+              res.send(err);
+          }
+          return res.status(201).json({
+            message: "Email verified successfully"
+          });
+        //      return res.status(201).json({
+        //     message: "Email Sent Successfully!"
+        // });
+      });
+  }else{
+    return res.status(201).json({
+      message: "Email verification failed"
+    });
+  }
   
 }
   

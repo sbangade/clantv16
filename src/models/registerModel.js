@@ -52,8 +52,13 @@ export const RegistersSchema = new Schema({
     fcm_token: {
         type: String
     },
+    emailverified: {
+        type: Boolean,
+        default: false
+    },
     everification: {
-        type: String
+        type: Number,
+        default: 1
     },
     plist: [{
         type: Schema.Types.ObjectId,

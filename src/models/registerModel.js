@@ -133,6 +133,10 @@ export const passengerSchema = new Schema({
         type:Boolean,
         default: false
     },
+    passenger_cancel:{
+        type: Boolean,
+        default: false
+    },
     token: {
         type: String
     },

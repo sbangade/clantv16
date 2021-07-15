@@ -681,6 +681,8 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
         },
       {
         got_driver: false
+      },{
+        passenger_cancel: false
       }
       ]
       },(err, login) => {
@@ -908,14 +910,17 @@ export const bookingCancellation = async (req, res, next) => {
   console.log('new data', postid.token);
   const newdata = postid.token;
   let oppid = 0;
+  let checker = false;
   if( newdata == req.query.token){
     console.log('driver',postid.drivers)
     oppid = postid.poster;
+    checker = true;
   }else{
     console.log('passenger',postid.poster)
     oppid = postid.drivers;
+    checker = false;
   }
-  console.log('opposition', oppid);
+  console.log('opposition', oppid, checker);
   //console.log(tokenn);
                //const {placeID} = req.params;
   //const data = await Register.findOne({Token: tkn});
@@ -947,7 +952,8 @@ export const bookingCancellation = async (req, res, next) => {
 Passenger.findOneAndUpdate({_id: postid._id}, { $set:
               {
                 trip_cancel: true,
-                got_driver: false
+                got_driver: false,
+                passenger_cancel: checker
               }}, null, function(err,doc) {
            if (err) { throw err; }
            else { console.log("Updated"); }

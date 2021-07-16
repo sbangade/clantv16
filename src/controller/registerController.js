@@ -17,7 +17,7 @@ import { admin } from '../firebase/firebase-config';
 import serviceAccount from '../firebase/clanit-e903d-firebase-adminsdk-wnrln-95e51dd8ee.json'; 
 
 import express from 'express';
-import bodyParser from 'body-parser';
+import bodyParser, { json } from 'body-parser';
 //const express = require('express');
 const app = express();
 //const bodyParser = require('body-parser');
@@ -987,11 +987,14 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
 export const confirmBooking = async (req, res, next) => {
   const postid = await Passenger.findOne({ _id: req.query.poster })
   //console.log(postid.poster);
-  const tokenn = await Register.findOne({ token: req.query.token },{"_id":1,"first_name":1,"last_name":1, "image":1})
+  const tokenn = await Register.findOne({ token: req.query.token })
   //console.log('token ', tokenn._id);
   const drvr = await Register.findOne({ _id: postid.poster },{"first_name":1,"last_name":1,"image":1});
   //console.log('new',drvr._id);
-  
+  const jsonToSend = JSON.parse(JSON.stringify(postid))
+  const jsonDrvr = JSON.parse(JSON.stringify(drvr))
+  jsonToSend._id = jsonDrvr._id
+  jsonToSend._first_name = jsonDrvr._first_name
   //var upost = JSON.stringify(postid)
   //var drinfo = JSON.stringify(tokenn)
   //console.log(tokenn);
@@ -1053,11 +1056,12 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
 //     })
 
 // }
-
+// j: ''+jsonToSend
 const message = {
   data: {
-    post: ''+postid+'',
-    driver: ''+drvr+''
+    data: ''+JSON.stringify(postid)+'',
+    driver: ''+JSON.stringify(drvr)+'',
+    type: 'Booking Confirmed'
   },
   token: registrationToken
 };
@@ -1174,8 +1178,9 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
 
 const message = {
   data: {
-    score: ''+postid+'',
-    passenger: ''+drvr+''
+    data: ''+JSON.stringify(postid)+'',
+    user: ''+JSON.stringify(drvr)+'',
+    type: 'Booking Cancelled'
   },
   token: registrationToken
 };

@@ -121,55 +121,10 @@ export const addnewRegister = (req, res, next) => {
           //   newRegister.Image = req.file.path
           // }
         newRegister.save();
-        let password = Math.random() * (1000000 - 100000) + 100000;
-        password = Math.ceil(password);
-        console.log('password - ', password)
-        //password = password.toString();
-      //   Register.findOneAndUpdate({email: mail }, { $set:
-      //     {
-      //       everification: password
-            
-      //     }
-      //  })
-      // const data = Register.findOne( mail )
-      // console.log('data ', data)
-        var transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: 'c0773230project@gmail.com',
-            pass: 'C0773230@'
-          }
+        return res.status(201).json({
+          message: "Registered Seccessfully"
         });
-        
-        var mailOptions = {
-          from: 'c0773230project@gmail.com',
-          to: mail,
-          subject: 'Try',
-          text: 'Your email verification code: '+password
-        };
-        
-        transporter.sendMail(mailOptions, function(error, info){
-          if (error) {
-            console.log(error);
-          } else {
-            Register.findOneAndUpdate( { email: mail},  {
-              $set: {
-                everification : password
-              },
-            }, { new: true }, (err, product) => {
-                  if (err) {
-                      res.send(err);
-                  }
-                     return res.status(201).json({
-                    message: "Email Sent Successfully!"
-                });
-              });
-            //console.log('Email sent: ' + info.response);
-            // return res.status(201).json({
-            //   message: "Email Sent Successfully!"
-            // });
-          }
-        });
+      
       
         
        // return res.status(200).json({
@@ -592,7 +547,7 @@ export const liveDriver = async (req, res) => {
              for (var element of login){
                index++
        
-               let { temp } = element.token;
+               let temp = element.token;
 
                console.log('Token', temp)
             //    var myobj = JSON.parse(JSON.stringify({
@@ -601,7 +556,7 @@ export const liveDriver = async (req, res) => {
             // console.log('object',...myobj);
                
                var value = await Register
-               .findOne(temp)
+               .findOne({token: temp})
                .select('first_name last_name image mobile')
 
                console.log('Value - ',value)
@@ -814,9 +769,17 @@ export const onlinePilot = async (req, res, next) => {
         find_passenger : finding
       },
     }, { new: true });
+    //const data = Pilot.findOne({ token: tchecker})
+    var value = await Pilot
+    .findOne({token: tchecker})
+    console.log('data', value);
+    if( value.find_passenger == true){
     return res.status(201).json({
       message: "Finding Passengers for you..."
     }); 
+  }else{
+    res.send('')
+  }
   }
 }
 

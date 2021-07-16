@@ -1105,11 +1105,11 @@ export const bookingCancellation = async (req, res, next) => {
   let checker = false;
   if( newdata == req.query.token){
     console.log('driver',postid.drivers)
-    oppid = postid.poster;
+    oppid = postid.drivers;
     checker = true;
   }else{
     console.log('passenger',postid.poster)
-    oppid = postid.drivers;
+    oppid = postid.poster;
     checker = false;
   }
   console.log('opposition', oppid, checker);
@@ -1141,15 +1141,15 @@ export const bookingCancellation = async (req, res, next) => {
   //console.log("req.body.poster", req.body.poster);
   //console.log("postid", postid);
   //console.log("postid._id", postid._id);
-Passenger.findOneAndUpdate({_id: postid._id}, { $set:
-              {
-                trip_cancel: true,
-                got_driver: false,
-                passenger_cancel: checker
-              }}, null, function(err,doc) {
-           if (err) { throw err; }
-           else { console.log("Updated"); }
-         }); 
+// Passenger.findOneAndUpdate({_id: postid._id}, { $set:
+//               {
+//                 trip_cancel: true,
+//                 got_driver: false,
+//                 passenger_cancel: checker
+//               }}, null, function(err,doc) {
+//            if (err) { throw err; }
+//            else { console.log("Updated"); }
+//          }); 
     //      Pilot.findOneAndUpdate({_id: drpost._id}, { $set:
     //       {
     //         trip_cancel: true
@@ -1158,20 +1158,16 @@ Passenger.findOneAndUpdate({_id: postid._id}, { $set:
     //       }}, null, function(err,doc) {
     //    if (err) { throw err; }
     //    else { console.log("Updated"); }
-    //  }); 
-    const driveR = await Register.findById(oppid);
-    if( driveR.got_driver == false ){
+    //  });
+    const driveR = await Register.findById(oppid); 
+    console.log('fcm token ', driveR);
+  //  const driveR = await Register.findById(oppid);
+    if( driveR.got_driver == false || driveR.fcm_token == null || driveR.fcm_token == undefined || driveR.fcm_token == "" ){
       res.status(200).json({
         message: "Booking Cancelled"
       });
-    }else{    
-
-     if( driveR.fcm_token == null || driveR.fcm_token == undefined || driveR.fcm_token == ""){
-      res.status(200).json({
-        message: "Booking Cancelled FCM Token Is Null"
-      });
-     }
-     else{
+    }else{ 
+     
       
   //await user.save();
   const registrationToken = driveR.fcm_token;
@@ -1199,8 +1195,17 @@ admin.messaging().send(message)
   res.status(200).json({
     message: "Booking Cancelled"
   });
-}
+
     }
+    Passenger.findOneAndUpdate({_id: postid._id}, { $set:
+      {
+        trip_cancel: true,
+        got_driver: false,
+        passenger_cancel: checker
+      }}, null, function(err,doc) {
+   if (err) { throw err; }
+   else { console.log("Updated"); }
+ });    
   
   // await Passenger.find({},{"_id":0},(err, login) => {
   //            if (err) {

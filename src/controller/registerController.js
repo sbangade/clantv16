@@ -574,6 +574,7 @@ export const driverHistory = async (req, res) => {
 }
 //{ "find_passenger": { $eq: true }
 export const liveDriver = async (req, res) => { 
+  var jsonToSend = [];
   await Pilot.find({  $and: [
     // { $text: { $search: "sarnia" } }
    {find_passenger: true},
@@ -583,7 +584,53 @@ export const liveDriver = async (req, res) => {
          if (err) {
              res.send(err);
          }
-         res.json(login);
+         //res.json(login);
+         fun_for_loop(login)
+         async function fun_for_loop(login) {
+       
+             var index = 0
+             for (var element of login){
+               index++
+       
+               let { temp } = element.token;
+
+               console.log('Token', temp)
+            //    var myobj = JSON.parse(JSON.stringify({
+            //     temp
+            // }));
+            // console.log('object',...myobj);
+               
+               var value = await Register
+               .findOne(temp)
+               .select('first_name last_name image mobile')
+
+               console.log('Value - ',value)
+               
+               var jsonObject = JSON.parse("{}")
+               
+               jsonObject.is_trip_completed = element.is_trip_completed
+               jsonObject.trip_cancel = element.trip_cancel
+               jsonObject.post_id = element._id
+               jsonObject.locality = element.locality
+               jsonObject.ride_type = element.ride_type
+               
+               jsonObject.first_name_passenger = value.first_name
+               jsonObject.last_name_passenger = value.last_name
+               jsonObject.image_passenger = value.image
+               jsonObject.mobile_passenger = value.mobile
+               
+       
+             
+       
+             jsonToSend.push(jsonObject) 
+       
+                  if (index == login.length) {  
+         
+           res.status(200).json(
+             jsonToSend);
+                  }
+             }
+          }
      });
 }
 
@@ -617,7 +664,7 @@ export const passengerHistory = async (req, res) => {
         index++
 
         let temp = element.drivers;
-        
+        console.log('Temp', temp)
         var value = await Register
         .findOne(temp)
         .select('first_name last_name image mobile')
@@ -800,13 +847,14 @@ export const addDriver = async (req, res, next) => {
   
    console.log('entry - ',tkn); 
   const newPlace = new Pilot(req.body);
+  //await newPlace.save();
   //console.log(newPlace);
   //const data = requireLogin();
   
   const user = await Register.findById(tkn._id);
   
   console.log('driver post', user.favlist);
-  if(user.favlist == []){
+  if(user.favlist == [] || user.favlist == ''){
     newPlace.myfavorite = user; //myfavorite
     await newPlace.save();
     user.favlist.push(newPlace);
@@ -818,7 +866,7 @@ export const addDriver = async (req, res, next) => {
     //console.log('local ', local);
     const drtoken = user.favlist;
     const newtoken = "'"+drtoken+"'";
-    console.log('postID', newtoken);
+    //console.log('postID', newtoken);
 
  
 await Pilot.findOneAndUpdate( {_id: drtoken},  {
@@ -836,8 +884,12 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
   
   //const locality = req.body.locality
   //var dateTimeTofilter = moment().subtract(1, 'year');
-  var currentdate = new Date(); 
-  console.log(currentdate);
+ // var currentdate = new Date();
+  var today = new Date();
+  var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+  var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+  var dateTime = date+' '+time; 
+  //console.log('Datetime ',dateTime);
   // {drop_off: { $regex: new RegExp(`^${local}$`), $options: 'i' }}
   await user.save();
   var jsonToSend = [];
@@ -850,7 +902,7 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
         
         ]},
         {
-          time: { $gte: currentdate}
+          time: { $gte: dateTime}
         },
       {
         got_driver: false

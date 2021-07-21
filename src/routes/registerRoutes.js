@@ -19,7 +19,8 @@ import { addnewRegister,
          uploadImage,
          onlinePilot,
          emailVeriication,
-         emailResend
+         emailResend,
+         updateUserProfile
 } from '../controller/registerController';
 import express from 'express';
 
@@ -58,7 +59,8 @@ app.route('/token')  // both token generating - login
  
 // get a specific user's profile    
 app.route('/profile')
-    .get(getUserProfile) 
+    .get(getUserProfile)
+    .put(updateUserProfile); 
 
 // Forgot password
     

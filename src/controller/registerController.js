@@ -163,6 +163,39 @@ export const addnewRegister = (req, res, next) => {
 
   
 }
+
+// Edit User Profile
+export const updateUserProfile = async (req, res) => {
+ 
+    const fname = req.body.first_name;
+    const lname = req.body.last_name;
+    const birth = req.body.dob;
+    const dr_ps = req.body.is_driver_or_passenger;
+    const pic = req.body.image;
+    const cell = req.body.mobile;
+    const sex = req.body.gender;
+    const car_desc = req.body.car_details;
+    Register.findOneAndUpdate( { token: req.body.token},  {
+      $set: {
+            first_name : fname,
+            last_name: lname,
+            dob : birth,
+            is_driver_or_passenger: dr_ps,
+            image : pic, 
+            mobile : cell, 
+            gender : sex, 
+            car_details : car_desc
+      },
+    }, { new: true }, (err, product) => {
+          if (err) {
+              res.send(err);
+          }
+             return res.status(201).json({
+            message: "Profile Updated Successfully!"
+        });
+      });
+  
+}  
 // Resend email
 export const emailResend = async (req, res) => { 
   let mail = req.query.email 
@@ -558,32 +591,46 @@ export const liveDriver = async (req, res) => {
                var value = await Register
                .findOne({token: temp})
                .select('first_name last_name image mobile')
-
+              //  let arr = [];
+              //  arr.push(value); 
                console.log('Value - ',value)
+               //var index;
+              //  for(let a = 0; a < arr.length; a++){
+              //    //index++;
+              //    if( arr[a] == null){
+              //      console.log('Null value')
+              //    }else{
+                  var jsonObject = JSON.parse("{}")
                
-               var jsonObject = JSON.parse("{}")
+                  jsonObject.is_trip_completed = element.is_trip_completed
+                  jsonObject.trip_cancel = element.trip_cancel
+                  jsonObject.post_id = element._id
+                  jsonObject.locality = element.locality
+                  jsonObject.ride_type = element.ride_type
+                  
+                  jsonObject.first_name_passenger = value.first_name
+                  jsonObject.last_name_passenger = value.last_name
+                  jsonObject.image_passenger = value.image
+                  jsonObject.mobile_passenger = value.mobile
+                  
+          
+                
+          
+                jsonToSend.push(jsonObject) 
+          
+                     if (index == login.length) {  
+            
+              res.status(200).json(
+                jsonToSend);
+                     }
+                    //  res.status(200).json(
+                    //   jsonToSend);
+
+                 //}
+                //}
                
-               jsonObject.is_trip_completed = element.is_trip_completed
-               jsonObject.trip_cancel = element.trip_cancel
-               jsonObject.post_id = element._id
-               jsonObject.locality = element.locality
-               jsonObject.ride_type = element.ride_type
                
-               jsonObject.first_name_passenger = value.first_name
-               jsonObject.last_name_passenger = value.last_name
-               jsonObject.image_passenger = value.image
-               jsonObject.mobile_passenger = value.mobile
-               
-       
-             
-       
-             jsonToSend.push(jsonObject) 
-       
-                  if (index == login.length) {  
          
-           res.status(200).json(
-             jsonToSend);
-                  }
              }
           }
      });
@@ -824,9 +871,6 @@ export const addDriver = async (req, res, next) => {
   }
   //
   else{
-    //console.log('postID - ',req.body.postID);
-    //console.log('pass', req.body.find_passenger);
-    //console.log('local ', local);
     const drtoken = user.favlist;
     const newtoken = "'"+drtoken+"'";
     //console.log('postID', newtoken);
@@ -853,13 +897,12 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
   var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
   var dateTime = date+' '+time; 
   //console.log('Datetime ',dateTime);
-  // {drop_off: { $regex: new RegExp(`^${local}$`), $options: 'i' }}
   await user.save();
   var jsonToSend = [];
+  
   await Passenger.find(
         {
           $and: [{$or:[
-           // { $text: { $search: "sarnia" } }
           {pick_up: /sarnia/i},
           {drop_off: /sarnia/i}
         

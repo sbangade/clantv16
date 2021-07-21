@@ -1055,6 +1055,14 @@ export const confirmBooking = async (req, res, next) => {
   //console.log(user);
   // newPlace.myfavorite = user; //myfavorite
   // await newPlace.save();
+  const passData = await Passenger.findOne({_id: postid._id})
+  const availability = passData.got_driver;
+  console.log('availability - ',availability)
+  if(availability == true){
+    res.status(200).json({
+      message: "This ride has already been booked."
+    });
+  }else{
   user.history.push(tokenn,postid);
 
   //user.history.push(postid);
@@ -1123,6 +1131,7 @@ admin.messaging().send(message)
   res.status(200).json({
     message: "Booking Confirmed"
   });
+}
 }
 
   

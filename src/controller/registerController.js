@@ -831,6 +831,7 @@ export const onlinePilot = async (req, res, next) => {
 }
 
 // Driver posting
+// Driver posting
 export const addDriver = async (req, res, next) => {
   const tchecker = req.body.token;
   const local = req.body.locality;
@@ -852,10 +853,10 @@ export const addDriver = async (req, res, next) => {
     });
   }
   else{
-    console.log('tchecker ',tchecker)
+    //console.log('tchecker ',tchecker)
   const tkn = await Register.findOne({ token: tchecker })
   
-   console.log('entry - ',tkn); 
+   //console.log('entry - ',tkn); 
   const newPlace = new Pilot(req.body);
   //await newPlace.save();
   //console.log(newPlace);
@@ -863,7 +864,7 @@ export const addDriver = async (req, res, next) => {
   
   const user = await Register.findById(tkn._id);
   
-  console.log('driver post', user.favlist);
+  //console.log('driver post', user.favlist);
   if(user.favlist == [] || user.favlist == ''){
     newPlace.myfavorite = user; //myfavorite
     await newPlace.save();
@@ -903,8 +904,8 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
   await Passenger.find(
         {
           $and: [{$or:[
-          {pick_up: /sarnia/i},
-          {drop_off: /sarnia/i}
+          {pick_up: new RegExp(local, 'i')},
+          {drop_off: new RegExp(local, 'i')}
         
         ]},
         {
@@ -926,8 +927,10 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
              async function fun_for_loop(login) {
            
                  var index = 0
+  console.log('tag ',login);
                  for (var element of login){
                    index++
+  console.log('tag ',index);
            
                    let temp = element.poster;
                    

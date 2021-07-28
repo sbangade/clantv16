@@ -12,6 +12,7 @@ import nodemailer from 'nodemailer';
 // const {JWT_SECRET} = require('../config/keys')
 // const requireLogin = require('../middleware/requireLogin')
 import { RegistersSchema, PilotSchema, passengerSchema } from '../models/registerModel';
+import { placesSchema } from '../models/placesModel';
 import fcm from 'fcm-notification';
 import { admin } from '../firebase/firebase-config';
 import serviceAccount from '../firebase/clanit-e903d-firebase-adminsdk-wnrln-95e51dd8ee.json'; 
@@ -34,6 +35,7 @@ const FcM = new fcm(serviceAccount);
 const Register = mongoose.model('Register', RegistersSchema);
 const Passenger = mongoose.model('Passenger', passengerSchema);
 const Pilot = mongoose.model('Pilot', PilotSchema);
+const Place = mongoose.model('Place', placesSchema);
 
 //var Token = "abc";
 export const uploadImage = async (req, res, next) => {
@@ -62,7 +64,7 @@ export const uploadImage = async (req, res, next) => {
 
 
 export const addnewRegister = (req, res, next) => {
-  
+   
 
 
     let newRegister = new Register(req.body);
@@ -1029,6 +1031,7 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
        
     
     }
+  
 
 export const confirmBooking = async (req, res, next) => {
   const postid = await Passenger.findOne({ _id: req.query.poster })
@@ -1440,14 +1443,12 @@ export const datahistory = async (req, res, next) => {
 
 // update driver
 export const updateDriver = async (req, res) => {
-     const data = await Pilot.findOneAndUpdate({_id: req.body.personid}, req.body, { new: true, useFindAndModify: false });
-     res.json(data);
-    // , (err, product) => {
-    //     if (err) {
-    //         res.send(err);
-    //     }
-    //     res.json(product);
-    // });
+  Pilot.findOneAndUpdate({_id: req.body.poster}, req.body, { new: true, useFindAndModify: false }, (err, product) => {
+    if (err) {
+        res.send(err);
+    }
+    res.json(product);
+ });
   }    
 
 // passengers posting
@@ -1612,10 +1613,149 @@ export const getPassengerWithId = async (req, res) => {
   // });
 }
 export const updatePassenger = (req, res) => {
-    Passenger.findOneAndUpdate({_id: req.body.postid}, req.body, { new: true, useFindAndModify: false }, (err, product) => {
+    Passenger.findOneAndUpdate({_id: req.body.poster}, req.body, { new: true, useFindAndModify: false }, (err, product) => {
         if (err) {
             res.send(err);
         }
         res.json(product);
     });
-  }     
+  } 
+  
+  export const addPlacesToFavorite =  async (req, res) => {
+    const Token = req.body.token;
+    console.log('Token', Token);
+    const poster = req.body.poster;
+    console.log('poster ',poster)
+    const tkn = await Register.findOne({token: Token});
+    console.log('userid - ',tkn);
+    //console.log('Entry - ', tkn._id);
+    const user = await Register.findById(tkn._id);
+    console.log('addeduser',user);
+   // const user = await User.findById(userpost._id);
+    //console.log('user ',userpost);
+    //const postid = userpost;
+    
+    //user.plist.push(newPlace);
+    user.fav_places.push(poster);
+    user.save();
+    res.status(200).json({
+      message: "Added as favorite"
+    });
+  
+  }  
+
+  // export const showFavorite = async (req, res, next) => {
+  //   const tkn = await Register.findOne({ token: req.query.token })
+  //   console.log('drid',tkn._id)
+  //   var jsonToSend = [];
+  
+  //   Register
+  //    .findOne({_id: tkn._id })
+  //    .populate('fav_places') // key to populate
+  //    .then(user => {
+  //      const user_history = user.fav_places;
+  //      console.log('history',user_history);
+  //      var myname;
+  //      //console.log('history',user_history)
+  //      if(user_history == ''){
+  //        res.send('No History - 0 Posts')
+  //      }
+  //      else{
+  
+  //       fun_for_loop(user_history)
+  
+  
+  //   async function fun_for_loop(user_history) {
+  
+  //       var index = 0
+  //       for (var element of user_history){
+  //         index++
+  
+  //         let temp = element.poster;
+          
+  //         var value = await Register
+  //         .findOne(temp)
+          
+  //         var jsonObject = JSON.parse("{}")
+  //         jsonObject.title = element.title
+  //         jsonObject.price = element.price
+  //         jsonObject.address = element.address
+  //         jsonObject.post_id = element._id
+  //         jsonObject.first_name_passenger = value.first_name
+  //         jsonObject.last_name_passenger = value.last_name
+  //         jsonObject.image_passenger = value.image
+  //         jsonObject.mobile_passenger = value.mobile
+  
+        
+  
+  //       jsonToSend.push(jsonObject) 
+  
+  //            if (index == user_history.length) {  
+    
+  //     res.status(200).json(
+  //       jsonToSend);
+  //            }
+  //       }
+  //    }
+  // }
+  //     });
+  //     }
+
+      export const showFavorite = async (req, res) => { 
+        const tkn = await Register.findOne({ token: req.query.token })
+        console.log(tkn._id);
+        var jsonToSend = [];
+        //const checker = tkn.is_driver_or_passenger;
+        //console.log(checker);
+        //const { page = 1, limit = 5 } = req.query;
+          Register
+         .findOne({_id: tkn._id })
+         .populate("fav_places") // key to populate
+         .then(user => {
+                const user_history = user.fav_places;
+       console.log('history',user_history);
+       var myname;
+       //console.log('history',user_history)
+       if(user_history == ''){
+         res.send('No History - 0 Posts')
+       }
+       else{
+  
+        fun_for_loop(user_history)
+  
+  
+    async function fun_for_loop(user_history) {
+  
+        var index = 0
+        for (var element of user_history){
+          index++
+          console.log('Element - ',)
+          let temp = element.poster;
+          
+          var value = await Register
+          .findOne(temp)
+          
+          var jsonObject = JSON.parse("{}")
+          jsonObject.place = element
+          jsonObject.price = element.price
+          jsonObject.address = element.address
+          jsonObject.post_id = element._id
+          jsonObject.first_name_host = value.first_name
+          jsonObject.last_name_host = value.last_name
+          jsonObject.image_host = value.image
+          jsonObject.mobile_host = value.mobile
+  
+        
+  
+        jsonToSend.push(jsonObject) 
+  
+             if (index == user_history.length) {  
+    
+      res.status(200).json(
+        jsonToSend);
+             }
+        }
+     }
+  }
+      });
+      }    

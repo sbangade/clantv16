@@ -56,7 +56,7 @@ export const RegistersSchema = new Schema({
         type: Boolean,
         default: false
     },
-    everification: {
+    everification: { 
         type: Number,
         default: 1
     },
@@ -67,6 +67,10 @@ export const RegistersSchema = new Schema({
     favlist: [{
         type: Schema.Types.ObjectId,
         ref: 'Pilot'
+    }],
+    fav_places: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Place'
     }],
     history: [{
             type: Schema.Types.ObjectId,
@@ -154,3 +158,6 @@ export const passengerSchema = new Schema({
         ref: 'Register'
     }
 });
+
+//export const customersSchema = new Schema({
+//},{collection : 'places'});

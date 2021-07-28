@@ -20,7 +20,9 @@ import { addnewRegister,
          onlinePilot,
          emailVeriication,
          emailResend,
-         updateUserProfile
+         updateUserProfile,
+         addPlacesToFavorite,
+         showFavorite
 } from '../controller/registerController';
 import express from 'express';
 
@@ -92,7 +94,14 @@ app.route('/cancel')   // driver calcelling trip
 //     .get(passengerCancellation);        
     
 app.route('/history') 
-    .get(datahistory);        
+    .get(datahistory);
+
+app.route('/favorite') 
+    .post(addPlacesToFavorite)
+    .get(showFavorite); 
+    
+    
+    
 
  
 

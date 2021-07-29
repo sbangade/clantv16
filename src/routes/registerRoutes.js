@@ -22,6 +22,7 @@ import { addnewRegister,
          emailResend,
          updateUserProfile,
          addPlacesToFavorite,
+         deletePost,
          showFavorite
 } from '../controller/registerController';
 import express from 'express';
@@ -113,6 +114,9 @@ app.route('/user')
     .get(getPassengerWithId)
     .post(addUserRequest)
     .put(updatePassenger);
+
+app.route('/delete')    
+    .post(deletePost);
 
 app.route('/userhistory')
     .get(passengerHistory);    

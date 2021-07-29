@@ -153,6 +153,10 @@ export const passengerSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Register'
     },
+    deleted:{
+        type: Boolean,
+        default: false
+    },
     poster: {
         type: Schema.Types.ObjectId,
         ref: 'Register'

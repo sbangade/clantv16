@@ -832,6 +832,15 @@ export const onlinePilot = async (req, res, next) => {
   }
 }
 
+export const deletePost = async (req, res) => {
+  Passenger.findOneAndUpdate({_id: req.body.postID}, { $set:
+    {
+      deleted: true
+    }}, null, function(err,doc) {
+ if (err) { throw err; }
+ else { res.send('Deleted!'); }
+}); 
+}
 // Driver posting
 // Driver posting
 export const addDriver = async (req, res, next) => {
@@ -915,7 +924,11 @@ await Pilot.findOneAndUpdate( {_id: drtoken},  {
         },
       {
         got_driver: false
-      },{
+      },
+      {
+        deleted: false
+      },
+      {
         passenger_cancel: false
       }
       ]
